@@ -28,6 +28,94 @@ function require_sudoer()
 echo "check gcc/g++/gdb/make"
 echo "depends tools are ok"
 #####################################################################################
+# for Arch, auto install tools by pac
+#####################################################################################
+OS_IS_ARCH=NO
+function Arch_prepare()
+{
+    OS_IS_ARCH=YES
+    echo "Arch detected, install tools if needed"
+
+    unzip --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install unzip"
+        require_sudoer "sudo pac -S --noconfirm unzip"
+        sudo pacman -S --noconfirm unzip; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install unzip success"
+    fi
+
+    ifconfig --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install ifconfig"
+        require_sudoer "sudo pacman -S --noconfirm net-tools"
+        sudo pacman -S --noconfirm net-tools; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install ifconfig success"
+    fi
+
+    gcc --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install gcc"
+        require_sudoer "sudo pacman -S --noconfirm gcc"
+        sudo pacman -S --noconfirm gcc; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install gcc success"
+    fi
+
+    g++ --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install g++"
+        require_sudoer "sudo pacman -S --noconfirm gcc"
+        sudo pacman -S --noconfirm gcc; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install g++ success"
+    fi
+
+    make --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install make"
+        require_sudoer "sudo pacman -S --noconfirm make"
+        sudo pacman -S --noconfirm  make; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install make success"
+    fi
+
+    python --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install python"
+        require_sudoer "sudo pacman -S --noconfirm python"
+        sudo pacman -S --noconfirm python; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install python success"
+    fi
+
+    patch --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+        echo "install patch"
+        require_sudoer "sudo pacman -S --noconfirm patch"
+        sudo pacman -S --noconfirm patch; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+        echo "install patch success"
+    fi
+
+    if [ $SRS_FFMPEG_TOOL = YES ]; then
+        autoconf --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+            echo "install autoconf"
+            require_sudoer "sudo pacman -S --noconfirm autoconf"
+            sudo pcman -S --noconfirm autoconf; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+            echo "install autoconf success"
+        fi
+
+        libtool --help >/dev/null 2>&1; ret=$?; if [[ 0 -ne $ret ]]; then
+            echo "install libtool"
+            require_sudoer "sudo pacman -S --noconfirm libtool"
+            sudo pacman -S --noconfirm libtool; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+            echo "install libtool success"
+        fi
+
+        if [[ ! -f /usr/include/zlib.h ]]; then
+            echo "install zlib1g-dev"
+            require_sudoer "sudo pacman -S --noconfirm zlib"
+            sudo pacman -S --noconfirm zlib; ret=$?; if [[ 0 -ne $ret ]]; then return $ret; fi
+            echo "install zlib1g-dev success"
+        fi
+    fi
+
+    echo "arch install tools success"
+    return 0
+}
+# donot prepare tools, for srs-librtmp depends only gcc and g++.
+if [ $SRS_EXPORT_LIBRTMP_PROJECT = NO ]; then
+    Arch_prepare; ret=$?; if [[ 0 -ne $ret ]]; then echo "Arch prepare failed, ret=$ret"; exit $ret; fi
+fi
+#####################################################################################
 # for Ubuntu, auto install tools by apt-get
 #####################################################################################
 OS_IS_UBUNTU=NO
@@ -373,7 +461,7 @@ SED="sed -i" && if [ $OS_IS_OSX = YES ]; then SED="sed -i ''"; fi
 #       directly build on arm/mips, for example, pi or cubie,
 #       export srs-librtmp
 # others is invalid.
-if [[ $OS_IS_UBUNTU = NO && $OS_IS_CENTOS = NO && $OS_IS_OSX = NO && $SRS_EXPORT_LIBRTMP_PROJECT = NO ]]; then
+if [[ $OS_IS_ARCH = NO && $OS_IS_UBUNTU = NO && $OS_IS_CENTOS = NO && $OS_IS_OSX = NO && $SRS_EXPORT_LIBRTMP_PROJECT = NO ]]; then
     if [[ $SRS_PI = NO && $SRS_CUBIE = NO && $SRS_CROSS_BUILD = NO ]]; then
         echo "what a fuck, os not supported."
         exit 1

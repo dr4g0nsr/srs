@@ -82,7 +82,7 @@ done
 #####################################################################################
 # build tools or compiler args.
 # enable gdb debug
-if [ $SRS_EXPORT_LIBRTMP_PROJECT != NO ]; then
+if [ $SRS_DEBUG != NO ]; then
    GDBDebug=" -g -O0 "
 else
    GDBDebug=""

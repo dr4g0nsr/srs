@@ -5,7 +5,7 @@
 #####################################################################################
 # create the main objs
 SRS_WORKDIR="."
-SRS_OBJS_DIR="bin"
+SRS_OBJS_DIR="objs"
 SRS_OBJS="${SRS_WORKDIR}/${SRS_OBJS_DIR}"
 SRS_MAKEFILE="Makefile"
 
@@ -429,8 +429,8 @@ install:
 	@mkdir -p \$(__REAL_INSTALL)/bin/nginx/html
 	@cp research/api-server/static-dir/crossdomain.xml \$(__REAL_INSTALL)/bin/nginx/html
 	@echo "copy binary files"
-	@mkdir -p \$(__REAL_INSTALL)/bin
-	@cp objs/srs \$(__REAL_INSTALL)/bin
+	@mkdir -p \$(__REAL_INSTALL)/objs
+	@cp objs/srs \$(__REAL_INSTALL)/objs
 	@echo "copy srs conf files"
 	@mkdir -p \$(__REAL_INSTALL)/etc
 	@cp conf/*.conf \$(__REAL_INSTALL)/etc

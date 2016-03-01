@@ -1,0 +1,14 @@
+[Unit]
+Description=Simple RTMP Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/srs -c /usr/local/etc/srs.conf
+ExecStop=/usr/bin/kill -9 $MAINPID
+PIDFile=/var/run/srs.pid
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
